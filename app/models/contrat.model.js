@@ -9,6 +9,9 @@ module.exports = (sequelize, Sequelize) => {
       },
       description: {
         type: Sequelize.STRING
+      },
+      plafond: {
+        type: Sequelize.FLOAT
       }
      
     });

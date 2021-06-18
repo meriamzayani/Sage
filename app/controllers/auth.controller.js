@@ -43,16 +43,22 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     where: {
+     
       username: req.body.username
     }
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
+     
 
+        return res.status(404).send({ message: "User Not found." }
+        );
+       
+      }
+      
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
+        
         user.password
       );
 
@@ -63,7 +69,7 @@ exports.signin = (req, res) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id }, config.secret, {// point of token if 
         expiresIn: 86400 // 24 hours
       });
 
@@ -74,13 +80,13 @@ exports.signin = (req, res) => {
         }
         res.status(200).send({
           id: user.id,
-          username: user.username,
+          username: user.username,// u gonna send these without the config.secret?just a why to sotre???not security?
           email: user.email,
           roles: authorities,
           accessToken: token
         });
-            console.log("THE RESPONSE BODY IS");
-      console.log(res);
+           // console.log("THE RESPONSE BODY IS");
+      //console.log(res);
       });
     })
     .catch(err => {

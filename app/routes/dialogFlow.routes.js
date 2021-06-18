@@ -1,5 +1,6 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/dialogFlow.controller");
+const { verifyToken } = require("../middleware/authJwt");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -10,5 +11,5 @@ module.exports = function(app) {
     next();
   });
 
-  app.post("/send-msg", controller.callDialogFlow);
+  app.post("/send-msg", verifyToken, controller.callDialogFlow);
 };

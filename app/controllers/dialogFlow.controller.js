@@ -1,3 +1,5 @@
+const db = require("../models");
+
 const dialogflow = require('@google-cloud/dialogflow');
 const uuid = require('uuid');
 const sessionId = uuid.v4();
@@ -11,11 +13,11 @@ const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
 
 
   exports.callDialogFlow=((req,res)=>{
-    console.log(req.body.text);
+    
   
-    if(!req.body.text)
+    if(!req.text)
     return;
-    runSample(req.body.text).then(data=>{
+    runSample(req.text,req.userId).then(data=>{
       res.send({Reply:data})
     })
   })
@@ -25,7 +27,7 @@ const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
  * Send a query to the dialogflow agent, and return the query result.
  * @param {string} projectId The project to be used
  */
-async function runSample(msg) {
+async function runSample(msg,userId) {
     // A unique identifier for the given session
    
     // The text query request.
@@ -45,12 +47,41 @@ async function runSample(msg) {
     const responses = await sessionClient.detectIntent(request);
     console.log('Detected intent');
     const result = responses[0].queryResult;
-  
+   
     console.log(`  Query: ${result.queryText}`);
     console.log(`  Response: ${result.fulfillmentText}`);
-   if (result.intent) {
-     console.log(`  Intent: ${result.intent.displayName}`);
+   if (result.queryText.includes("contrat")) {
+     console.log("it fucking needs a database call");
+     const contractid=getUserContractId(userId);
+     console.log(userId);
+     getContractName(contractid);
+     console.log(getContractName(contractid));
+     
+   
     } else {
    }
    return result.fulfillmentText;
+  }
+
+
+  async function getUserContractId(userid)
+  {
+   const user =  await db.user.findByPk(userid);
+
+   return user.id_contrat;
+  }
+
+
+  
+  async function getContractName(id)//why need try catch why await why then
+  {
+    try{
+      const contrat =  await db.contrat.findByPk(id);
+      return contrat.nom;
+    }
+    catch{
+
+    }
+   
+    
   }
