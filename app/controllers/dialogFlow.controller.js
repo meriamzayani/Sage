@@ -14,10 +14,11 @@ const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
 
   exports.callDialogFlow=((req,res)=>{
     
-  
-    if(!req.text)
+    console.log(req.body.text);
+    if(!req.body.text)
     return;
-    runSample(req.text,req.userId).then(data=>{
+    runSample(req.body.text,req.userId).then(data=>{
+      console.log('data', data);
       res.send({Reply:data})
     })
   })
@@ -45,17 +46,16 @@ async function runSample(msg,userId) {
   
     // Send request and log result
     const responses = await sessionClient.detectIntent(request);
-    console.log('Detected intent');
+
     const result = responses[0].queryResult;
-   
-    console.log(`  Query: ${result.queryText}`);
-    console.log(`  Response: ${result.fulfillmentText}`);
    if (result.queryText.includes("contrat")) {
-     console.log("it fucking needs a database call");
-     const contractid=getUserContractId(userId);
-     console.log(userId);
-     getContractName(contractid);
-     console.log(getContractName(contractid));
+     const contractid = await getUserContractId(userId);
+     console.log('contractid', contractid);
+     const contractName =  getContractName(contractid);
+     console.log(contractName);
+     return contractName;
+
+    // console.log(getContractName(contractid));
      
    
     } else {
@@ -64,20 +64,23 @@ async function runSample(msg,userId) {
   }
 
 
-  async function getUserContractId(userid)
+   async function getUserContractId(userid) //async wra
   {
-   const user =  await db.user.findByPk(userid);
+   //const id_contrat = db.user.findByPk(userid).then(user => user.id_contrat);
+   //return id_contrat;
+
+     const user = await  db.user.findByPk(userid);
 
    return user.id_contrat;
   }
 
 
   
-  async function getContractName(id)//why need try catch why await why then
+  function getContractName(id)//why need try catch why await why then
   {
     try{
-      const contrat =  await db.contrat.findByPk(id);
-      return contrat.nom;
+      const contratNom = db.contrat.findByPk(id).then(contrat => contrat.nom);
+      return contratNom;
     }
     catch{
 
