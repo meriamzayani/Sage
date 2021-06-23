@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING
     },
     
-    address: {
+    meriam: {
       type: Sequelize.STRING
     }
   });

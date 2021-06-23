@@ -51,9 +51,10 @@ async function runSample(msg,userId) {
    if (result.queryText.includes("contrat")) {
      const contractid = await getUserContractId(userId);
      console.log('contractid', contractid);
-     const contractName =  getContractName(contractid);
+     const contractName =  await getContractName(contractid);
      console.log(contractName);
-     return contractName;
+     response = `votre type de contrat est ${contractName}`
+     return response;
 
     // console.log(getContractName(contractid));
      
@@ -76,7 +77,7 @@ async function runSample(msg,userId) {
 
 
   
-  function getContractName(id)//why need try catch why await why then
+ function getContractName(id)//why need try catch why await why then
   {
     try{
       const contratNom = db.contrat.findByPk(id).then(contrat => contrat.nom);
