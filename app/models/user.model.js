@@ -13,8 +13,10 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING
     },
-    
-    meriam: {
+    ville: {
+      type: Sequelize.STRING
+    },
+    userCode: {
       type: Sequelize.STRING
     }
   });

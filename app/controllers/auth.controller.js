@@ -13,7 +13,8 @@ exports.signup = (req, res) => {
   User.create({
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    userCode:req.body.userCode
   })
     .then(user => {
       if (req.body.roles) {
@@ -73,21 +74,19 @@ exports.signin = (req, res) => {
         expiresIn: 86400 // 24 hours
       });
 
-      var authorities = [];
-      user.getRoles().then(roles => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push("ROLE_" + roles[i].name.toUpperCase());
-        }
+      // var authorities = [];
+      // user.getRoles().then(roles => {
+      //   for (let i = 0; i < roles.length; i++) {
+      //     authorities.push("ROLE_" + roles[i].name.toUpperCase());
+      //   }
         res.status(200).send({
           id: user.id,
           username: user.username,// u gonna send these without the config.secret?just a why to sotre???not security?
           email: user.email,
-          roles: authorities,
+          //roles: authorities,
           accessToken: token
         });
-           // console.log("THE RESPONSE BODY IS");
-      //console.log(res);
-      });
+      // });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });

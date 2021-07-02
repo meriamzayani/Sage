@@ -14,18 +14,13 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
-// app.use(bodyParser.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // database
 const Role = db.role;
 
 db.sequelize.sync({
-  //alter:true
+  alter:true
 });
 // force: true will drop the table if it already exists
  /*db.sequelize.sync({force: true}).then(() => {
@@ -35,7 +30,7 @@ db.sequelize.sync({
 */
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.json({ message: " application." });
 });
 
 // routes

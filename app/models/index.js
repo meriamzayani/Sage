@@ -30,6 +30,8 @@ db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.contrat = require("../models/contrat.model.js")(sequelize, Sequelize);
 db.medicament = require("../models/medicament.model.js")(sequelize, Sequelize);
+db.Medecins = require("../models/medecin.model.js")(sequelize, Sequelize);
+
 db.tauxRemboursementMedicament = require("../models/tauxRemboursementMedicament.model.js")(sequelize, Sequelize);
 db.tauxRemboursementActeMedical = require("../models/tauxRemboursementActeMedical.model.js")(sequelize, Sequelize);
 
@@ -40,11 +42,11 @@ db.role.belongsToMany(db.user, {
   foreignKey: "roleId",
   otherKey: "userId"
 });
-db.user.belongsToMany(db.role, {
-  through: "user_roles",
-  foreignKey: "userId",
-  otherKey: "roleId"
-});
+// db.user.belongsToMany(db.role, {
+//   through: "user_roles",
+//   foreignKey: "userId",
+//   otherKey: "roleId"
+// });
 
 
 db.user.belongsTo(db.contrat,{
