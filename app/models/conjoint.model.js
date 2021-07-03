@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Conjoint = sequelize.define("conjoint", {
+  const conjoint = sequelize.define("conjoint", {
     nomPrenom: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -11,5 +11,5 @@ module.exports = (sequelize, Sequelize) => {
 
   });
 
-  return Conjoint;
+  return conjoint;
 };

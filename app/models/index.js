@@ -31,9 +31,10 @@ db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.contrat = require("../models/contrat.model.js")(sequelize, Sequelize);
 db.medicament = require("../models/medicament.model.js")(sequelize, Sequelize);
 db.Medecins = require("../models/medecin.model.js")(sequelize, Sequelize);
+db.conjoint = require("../models/conjoint.model.js")(sequelize, Sequelize);
+db.enfant = require("../models/enfant.model.js")(sequelize, Sequelize);
 
-db.tauxRemboursementMedicament = require("../models/tauxRemboursementMedicament.model.js")(sequelize, Sequelize);
-db.tauxRemboursementActeMedical = require("../models/tauxRemboursementActeMedical.model.js")(sequelize, Sequelize);
+
 
 
 
@@ -53,12 +54,16 @@ db.user.belongsTo(db.contrat,{
   foreignKey: 'id_contrat'
 });
 
-db.tauxRemboursementMedicament.belongsTo(db.contrat,{
-  foreignKey: 'id_contrat'
+db.conjoint.belongsTo(db.user,{
+  foreignKey: 'idUser'
 });
-db.tauxRemboursementMedicament.belongsTo(db.medicament,{
-  foreignKey: 'code_medicament'
+
+db.user.hasMany(db.enfant,{
+  foreignKey: 'idUser'
 });
+
+
+
 
 
 db.ROLES = ["user", "admin", "moderator"];

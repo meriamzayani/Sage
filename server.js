@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const Role = db.role;
 
 db.sequelize.sync({
-  alter:true
+  //alter:true
 });
 // force: true will drop the table if it already exists
  /*db.sequelize.sync({force: true}).then(() => {
