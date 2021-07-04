@@ -2,13 +2,17 @@
 
 module.exports = (sequelize, Sequelize) => {
     const ActeMedical = sequelize.define("acteMedical", {
-      nom: {
+      type: {
         type: Sequelize.STRING
       },
-      prix: {
+     
+      pourcentage: {
         type: Sequelize.FLOAT
       },
-  
+      plafond: {
+        type: Sequelize.FLOAT
+      }
+     
     });
   
     return ActeMedical;

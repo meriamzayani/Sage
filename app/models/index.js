@@ -33,6 +33,9 @@ db.medicament = require("../models/medicament.model.js")(sequelize, Sequelize);
 db.Medecins = require("../models/medecin.model.js")(sequelize, Sequelize);
 db.conjoint = require("../models/conjoint.model.js")(sequelize, Sequelize);
 db.enfant = require("../models/enfant.model.js")(sequelize, Sequelize);
+db.acteMedical = require("../models/acteMedical.model.js")(sequelize, Sequelize);
+db.visiteMedicale = require("../models/visiteMedicale.model.js")(sequelize, Sequelize);
+db.appareillageMedical = require("../models/appareillageMedical.model.js")(sequelize, Sequelize);
 
 
 
