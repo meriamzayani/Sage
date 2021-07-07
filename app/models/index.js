@@ -27,25 +27,21 @@ db.sequelize = sequelize;
 
 
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
-db.role = require("../models/role.model.js")(sequelize, Sequelize);
+db.roles = require("../models/roles.model.js")(sequelize, Sequelize);
 db.contrat = require("../models/contrat.model.js")(sequelize, Sequelize);
 db.medicament = require("../models/medicament.model.js")(sequelize, Sequelize);
 db.Medecins = require("../models/medecin.model.js")(sequelize, Sequelize);
 db.conjoint = require("../models/conjoint.model.js")(sequelize, Sequelize);
 db.enfant = require("../models/enfant.model.js")(sequelize, Sequelize);
-db.acteMedical = require("../models/acteMedical.model.js")(sequelize, Sequelize);
 db.visiteMedicale = require("../models/visiteMedicale.model.js")(sequelize, Sequelize);
 db.appareillageMedical = require("../models/appareillageMedical.model.js")(sequelize, Sequelize);
+db.acteBulletin = require("../models/acteBulletin.model.js")(sequelize, Sequelize);
+db.bulletin = require("../models/bulletin.model.js")(sequelize, Sequelize);
+db.remboursementActe = require("../models/remboursementActe.model.js")(sequelize, Sequelize);
 
 
 
 
-
-db.role.belongsToMany(db.user, {
-  through: "user_roles",
-  foreignKey: "roleId",
-  otherKey: "userId"
-});
 // db.user.belongsToMany(db.role, {
 //   through: "user_roles",
 //   foreignKey: "userId",
@@ -61,14 +57,14 @@ db.conjoint.belongsTo(db.user,{
   foreignKey: 'idUser'
 });
 
+db.user.belongsTo(db.roles,{
+  foreignKey: 'idRole'
+});
+
 db.user.hasMany(db.enfant,{
   foreignKey: 'idUser'
 });
 
 
-
-
-
-db.ROLES = ["user", "admin", "moderator"];
 
 module.exports = db;

@@ -16,7 +16,7 @@ module.exports = (sequelize, Sequelize) => {
     ville: {
       type: Sequelize.STRING
     },
-    userCode: {
+    idUnique: {
       type: Sequelize.STRING
     },
     lastName: {

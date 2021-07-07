@@ -15,8 +15,13 @@ const {
     medicament,
     conjoint,
     enfant,
-    visiteMedicale
+    visiteMedicale,
+    acteBulletin,
+    remboursementActe,
+    user
 } = require("../models");
+const remboursementActeModel = require("../models/remboursementActe.model");
+const acteBulletinModel = require("../models/acteBulletin.model");
 const sessionId = uuid.v4();
 
 // Create a new session
@@ -63,7 +68,7 @@ async function runSample(msg, userId) {
     answer = result.fulfillmentText;
 
 
-
+////////MEDICAMENT
 
     if (isNaN(result.queryText)) {
       const med = await getMedicament(result.queryText);
@@ -80,13 +85,30 @@ async function runSample(msg, userId) {
 
     console.log('result.intent.displayName: ', result.intent.displayName);
 
-    ///CONTRAT
+ /////////CONTRAT
     if (result.intent.displayName === "contrat") {
 
+        //const acteBulletin=await getActebyBulletin(123);
+        var myString ="\n"
+
+        acteBulletin.forEach(acte => {
+        myString=myString.concat(`\n📆Date: ${acte.date}\n🩺Acte Medical: ${acte.designationActe}\n💰Honoraire: ${acte.honoraire} DT\n`);
+        
+  
+        });
+       console.log(result.parameters)
+        // console.log(myString);
+        // console.log(`acteBulletin${acteBulletin[1].honoraire}`)
+
+       
+        // console.log()
         const contractid = await getUserContractId(userId);
         const contractName = await getContractName(contractid); //is this not UnhandledPromiseRejectionWarning: TypeError: Assignment to constant variable.ffs???
-        answer = `votre type de contrat est ${contractName} voulez vous avoir plus de détails sur votre contrat?`
+       //answer = `votre type de contrat est ${contractName} voulez vous avoir plus de détails sur votre contrat?`
+       answer = `votre type de contrat est ${contractName} voulez vous avoir plus de détails sur votre contrat?`
     }
+
+
     ///CONJOINT
 
 
@@ -149,7 +171,7 @@ async function runSample(msg, userId) {
         //     answer = 'L"age de votre enfant ne doit pas depasser les 20 ans ❌';
         // }
         else{
-            console.log("AHAHAHAHAH",result.parameters.fields.person.structValue.fields.name.stringValue)
+           
             nomEnfant=result.parameters.fields.person.structValue.fields.name.stringValue;
             const enf = await enfant.findOne({
                 where: {
@@ -205,8 +227,8 @@ async function runSample(msg, userId) {
         }
 
     }
-    ///SPECIALITE
-    if (result.intent.displayName == "medecins - yes - specialité") {
+/////SPECIALITE
+    if (result.intent.displayName === "medecins - yes - specialité") {
 
         ville = await getUserVille(userId);
 
@@ -226,10 +248,11 @@ async function runSample(msg, userId) {
 
     ///ASSURES
     if (result.intent.displayName === "Assures") {
-      const con = await getConjoint(userId);
-      const enfants =  await  getEnfant(userId);
-
-
+      var con = await getConjoint(userId);
+      var enfants =  await  getEnfant(userId);
+      if(con==0){con="vous n'avez pas ajouté un conjoint à votre assurance"}
+      if(enfants==0){enfants="vous n'avez pas ajouté d'enfant à votre assurance"}
+      
       answer = `Voici la liste des personnes couvetes par votre assurance :\n\nEnfant :\n${formatDocNames(enfants)}\nConjoint :⭐ ${con}`;
 
   }
@@ -238,20 +261,90 @@ async function runSample(msg, userId) {
 
   if (result.intent.displayName === "Consultation") {
     const visites = await getVisite();
-    //const honor =  await  getHonor(userId);
+ 
+      var myString ="\n"
 
-    var myString ="mimi\n"
-    //myString.concat("hello")
+      visites.forEach(visite => {
+        myString=myString.concat(`⭐ ${visite.specialite}:${visite.honoraire} DT\n`);
+        console.log(myString);
+
+      });
      
-     mystring+="hello";
-     console.log(myString)
-   
-    // visites.forEach(visite => {
-    //     newListe.append(`⭐ ${visite.specialite}:${visite.honoraire} DT\n` ) 
-    // });
-    // console.log(newListe)
-    // // \n\nEnfant :\n${formatDocNames(enfants)}\nConjoint :⭐ ${con}`;
-    // answer = `Voici la liste des honoraires par type de visite médicale : \n${newListe}`
+    
+      answer = `Voici la liste des honoraires par type de visite médicale : \n${myString}`
+
+}
+
+if (result.intent.displayName === "AjoutBulletin") {
+
+     const role = await getUserRole(userId)
+
+     if(role!=1){
+         answer = 'Vous n"avez pas acces à cette fonctionnalité ❌'
+     }
+
+
+}
+
+if (result.intent.displayName === "AjoutBulletin - details") {
+
+    async function getDetails()
+    {
+        detailsArray = [];
+        const idUnique = result.parameters.fields.idUnique.numberValue
+
+        const numBulletin=result.parameters.fields.numBulletin.numberValue
+
+        const honoraire=result.parameters.fields.honorair.numberValue
+
+        const dateActe=result.parameters.fields.dateActe.stringValue
+
+        const codeActe=result.parameters.fields.codeActe.numberValue
+
+        if(idUnique){
+            detailsArray.push(idUnique);
+        }
+
+        if(numBulletin){
+            detailsArray.push(numBulletin);
+        }
+        if(honoraire){
+            detailsArray.push(honoraire);
+        }
+        if(dateActe!=''){
+            detailsArray.push(dateActe);
+        }
+        if(codeActe){
+            detailsArray.push(codeActe);
+        }
+    
+        if(detailsArray.length!=5){
+            return 0
+        }else
+        return detailsArray
+         
+       
+    }
+    console.log("we good")
+    const details = await getDetails();
+    if(details!=0)
+     console.log(details);
+     if(details!=0){
+        const designation = await getDesignation(details[4])
+        console.log(designation.dataValues.Designation)
+          const acteB = await db.acteBulletin.create({
+              idUniqueUser: details[0],
+              numBulletin: details[1],
+              codeActe: details[4],
+              date: details[3],
+              honoraire:details[2],
+              designation:designation.dataValues.Designation
+           });
+
+     }
+
+
+
 }
 
 
@@ -260,6 +353,37 @@ async function runSample(msg, userId) {
 
 
 
+
+
+
+
+//////ACTESMEDICAUX PAR CONTRAT
+if (result.intent.displayName === "ActeMedical") {
+
+   actes =await ActeContrat(userId);
+
+   answer = actes
+        
+
+}
+
+
+if (result.intent.displayName === "DetailsBulletin - numero") {
+    const idUnique=await getIdUniqueUser(userId);
+    details =await getActebyBulletinUser(result.queryText,idUnique);
+    var myString =`Voici les détails du bulletin de numéro ${result.queryText}\n` 
+    details.forEach(detail => {
+       
+     myString=myString.concat(`\n📑Acte: ${detail.dataValues.designation}\n📆Date: ${detail.dataValues.date}\n💰Honoraire: ${detail.dataValues.honoraire} DT\n`);
+            
+      
+           
+     });
+    console.log(myString)
+    return myString
+
+ 
+ }
 
 
 
@@ -267,11 +391,23 @@ async function runSample(msg, userId) {
 
 
     return answer;
+
 }
 
 
 
-////////////////
+
+
+
+
+
+
+
+
+
+
+
+////////////////FUNCTIONS
 async function DetailMedecin(NomMedecin) {
     const doctor = await Medecins.findOne({
         where: {
@@ -365,6 +501,22 @@ async function getUserLastName(id) {
 }
 
 
+async function getUserRole(idUser) {
+    try {
+        console.log("I m here 1 ")
+        const roleId = await db.user.findByPk(idUser).then(user => user.idRole);
+        // console.log(`I m here 2 ${roleId}`)
+        // const roleNom = db.roles.findByPk(roleId).then(role => role.nom);
+        // console.log(`I m here 3 ${roleNom}`)
+        return roleId;
+    } catch {
+
+    }
+
+
+}
+
+
 
 async function getMedecinByVilleSpecialite(ville, specialite) {
 
@@ -428,8 +580,13 @@ async function getEnfant(userId){
 
 
 });
-const nomEnfant = enfants.map(enfant => enfant.nomPrenom);
+
+if(!enfant)return 0
+else{
+    const nomEnfant = enfants.map(enfant => enfant.nomPrenom);
 return nomEnfant;
+}
+
 }
 
 
@@ -443,9 +600,13 @@ async function getConjoint(userId){
 
 
 });
+if(!c){
+    return 0
+}else{
+    const nomConjoint = c.nomPrenom;
+    return nomConjoint;
+}
 
-const nomConjoint = c.nomPrenom;
-return nomConjoint;
 }
 
 
@@ -469,14 +630,73 @@ async function getVisite(){
 
 
 
-  async function getHonor(){
-    const allhonor = await visiteMedicale.findAll({
 
 
 
-  });
-  const honor = allhonor.map(visite => visite.honoraire);
+   ///////ACTE BY BULLETIN AND USER
+   async function getActebyBulletinUser(numBulletin,idUniqueUser){
+    const actes = await acteBulletin.findAll({
+        where: {
+
+            [Op.and]: [{
+                numBulletin: numBulletin
+                },
+                {
+                    idUniqueUser: idUniqueUser
+                }
+            ]
+        }
+    });
+
+    return actes
+   }
 
 
-  return honor;
-  }
+   ///////GET ID UNIQUE USER
+
+   async function getIdUniqueUser(idUser){
+    const user = await db.user.findOne({
+        where: { id: idUser}
+    
+    });
+    const userIdUnique = user.idUnique
+    return userIdUnique
+   }
+
+
+
+///////DESIGNATION ACTE
+async function getDesignation(codeActe){
+    const acteDesignation = await remboursementActe.findOne({
+    where: { code: codeActe}});
+    return acteDesignation
+
+}
+
+
+/////ACTE MEDICAUX SELON CONTRAT
+async function ActeContrat(idUser){
+    nomC = await getContractName(idUser)
+     const actes = await db.remboursementActe.findAll({
+         where: {
+            nomContrat: {
+                [Op.like]: '%' + nomC + '%'
+            }
+         }
+
+
+     });
+    // console.log(actes)
+   // console.log(actes[0].dataValues)
+   var myString =`Voici les taux de rembousement ainsi que les plafonds des actes médicaux selon votre contrat de type ${nomC} \n`
+     actes.forEach(acte => {
+       
+     myString=myString.concat(`\n📑Désignation: ${acte.dataValues.Designation}\n💹Taux Remboursement: ${acte.dataValues.tauxRemboursement} %\n💰plafond: ${acte.dataValues.plafond} DT\n`);
+            
+      
+           
+     });
+    console.log(myString)
+    return myString
+   }
+   
